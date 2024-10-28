@@ -69,7 +69,7 @@ export default function Dashboard(){
                 
                 {summary && Object.entries(summary).map(([key, value]) => (
 
-                    <div className="relative flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0" key={key}>
+                    <div className="relative flex-col mx-2 my-6 px-8 py-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0" key={key}>
 
                     
                     
@@ -77,6 +77,14 @@ export default function Dashboard(){
                         
                         Object.entries(value).map(([key1, val]) => (
                             <div key={key1}>
+
+                                <div className="absolute top-2 right-2/4">
+                                    Category : 
+                                </div>
+
+                                <div className="absolute top-2 right-64">
+                                    Priority : 
+                                </div>
 
                                 {key1 === "Email_date" && (
                                     <div className="absolute top-2 right-5">

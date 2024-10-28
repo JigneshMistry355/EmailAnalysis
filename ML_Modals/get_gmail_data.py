@@ -97,6 +97,7 @@ class GmailSummary:
                     break
                 except:
                     pass
+
         return history_Element
     
     def generateResponse(self):
@@ -122,7 +123,11 @@ class GmailSummary:
             details = self.SingleEmailDetails(email_id)
             # API_DATA.update({"Email "+str(email_id) : {}})
             
-            prompt = f"Generate a summary for : {details}" 
+            prompt = f"""Please summarize the following email:
+
+                    {details}
+
+                    The summary should include the main points, any action items, and important dates or deadlines mentioned Or summarize according to the context of the email in a single paragraph.""" 
 
             # print("#"*150)
             # print("\n\n\n")
@@ -154,12 +159,22 @@ class GmailSummary:
                 response_content += chunk['message']['content']
                 # print(chunk['message']['content'], end='', flush=True)
 
+            category = self.Categorize_Email(response_content)
+            # category = category['message']['content']
+            # print("\n\nhdhdkhdkjshd", category)
+            # category = category.split("\n")
+            print(category)
+            # category = {item.split(":")[0].strip() : item.split(":")[1].strip() for item in category}
+            # print(category)
+
             API_DATA.update({"Email_"+str(email_id) : {
                 "Sender_Name":details['sender_name'],
                 "Sender_Email":details['sender_email'],
                 "Subject":details['subject'],
                 "Response":response_content,
-                "Email_date":details['email_date']
+                "Email_date":details['email_date'],
+                "Category": category['Category'],
+                "Priority": category['Priority']
             }})
             
                 
@@ -168,12 +183,44 @@ class GmailSummary:
                 'content': response_content
             })
 
-            # print("\n\n\n")
-            # for key, value in API_DATA.items():
-            #     print(key," : ", value, end="\n\n")
+            print("\n\n\n")
+            for key, value in API_DATA.items():
+                print(key," : ", value, end="\n\n")
+
+            # print(API_DATA["Email_"+str(email_id)]['Category']['message']['content'])
+
+
+
+            
             
         con.close()
         return API_DATA
+    
+    def Categorize_Email(self, response):
+        # con = sqlite3.connect("TodaysEmail.db")
+        # cur = con.cursor()
+        # response = cur.execute("SELECT Response FROM emails")
+        response_data = response
+
+        categories = ["Job Posting", "Inquiry", "Newsletter", "Application", "Confirmation", "Other"]
+        priority = ["urgent" ,"high", "medium", "low"]
+
+        prompt = f"Categorize this email summary based on category {categories} in single word \n Summary : {response_data} \n Also analyze the priority : {priority} \n Response format:  json \n Category : Your response \n Priority : Your response"
+
+        ollama_response = ollama.chat(model="llama3.2", messages=[{
+            'role':'user',
+            'content':prompt
+        }]
+        )
+
+        
+        ollama_response = ollama_response['message']['content']
+        print("Response :::::::::::::::::::\n",ollama_response)
+        # ollama_response = ollama_response.split("\n")
+        # ollama_response = {item.split(":")[0].strip() : item.split(":")[1].strip() for item in ollama_response}
+        # print(ollama_response)
+
+        return ollama_response
 
 
 if __name__ == '__main__':
@@ -184,7 +231,7 @@ if __name__ == '__main__':
 
     con = sqlite3.connect("TodaysEmail.db")
     cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS emails(id, Sender_Name, Sender_Email, Subject, Response, DateTime)")
+    cur.execute("CREATE TABLE IF NOT EXISTS emails(id, Sender_Name, Sender_Email, Subject, Response, DateTime, Category, Priority)")
 
     obj = GmailSummary(username, password)
     obj.Login()
@@ -217,6 +264,8 @@ if __name__ == '__main__':
     Subject = ''
     Response = ''
     DateTime = ''
+    Category = ''
+    Priority = ''
     
     for key, values in APP_DATA.items():
         # print(key , ": ")
@@ -246,8 +295,12 @@ if __name__ == '__main__':
                 Response = v
             if k == "Email_date":
                 DateTime = v
+            if k == "Category":
+                Category = v
+            if k == "Priority":
+                Priority = v
 
-            cur.execute("UPDATE emails SET Sender_Name=? , Sender_Email=? , Subject=? , Response=?, DateTime=? WHERE id=? ", (Sender_Name, Sender_Email, Subject, Response, DateTime, id))
+            cur.execute("UPDATE emails SET Sender_Name=? , Sender_Email=? , Subject=? , Response=?, DateTime=?, Category=?, Priority=? WHERE id=? ", (Sender_Name, Sender_Email, Subject, Response, DateTime,Category, Priority, id))
             # print("Emal updated successfuly \n\n")
 
     # print("##############")
@@ -255,7 +308,7 @@ if __name__ == '__main__':
     r = cur.fetchall()
     # print(r)
     r = r[::-1]
-    dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4], "Email_date": t[5]} for t in r}
+    dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4], "Email_date": t[5], "Category": t[6], "Priority": t[7]} for t in r}
     json_string = json.dumps(dict_from_tuples)
     print(json_string)
         
