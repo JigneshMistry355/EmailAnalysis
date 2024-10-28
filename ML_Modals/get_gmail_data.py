@@ -122,7 +122,7 @@ class GmailSummary:
             details = self.SingleEmailDetails(email_id)
             # API_DATA.update({"Email "+str(email_id) : {}})
             
-            prompt = f"Generate a short summary for : {details}" 
+            prompt = f"Generate a summary for : {details}" 
 
             # print("#"*150)
             # print("\n\n\n")
@@ -158,7 +158,8 @@ class GmailSummary:
                 "Sender_Name":details['sender_name'],
                 "Sender_Email":details['sender_email'],
                 "Subject":details['subject'],
-                "Response":response_content
+                "Response":response_content,
+                "Email_date":details['email_date']
             }})
             
                 
@@ -181,14 +182,16 @@ if __name__ == '__main__':
     username = os.getenv("EMAIL_USER")
     password = os.getenv("EMAIL_PASS")
 
+    con = sqlite3.connect("TodaysEmail.db")
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS emails(id, Sender_Name, Sender_Email, Subject, Response, DateTime)")
+
     obj = GmailSummary(username, password)
     obj.Login()
     APP_DATA = obj.generateResponse()  
     # print(json.dumps(APP_DATA))
 
-    con = sqlite3.connect("TodaysEmail.db")
-    cur = con.cursor()
-    cur.execute("CREATE TABLE IF NOT EXISTS emails(id, Sender_Name, Sender_Email, Subject, Response)")
+    
 
     # APP_DATA =  {
     #         "Email_b'5025'": 
@@ -213,6 +216,7 @@ if __name__ == '__main__':
     Sender_Email = ''
     Subject = ''
     Response = ''
+    DateTime = ''
     
     for key, values in APP_DATA.items():
         # print(key , ": ")
@@ -240,8 +244,10 @@ if __name__ == '__main__':
                 Subject = v
             if k == "Response":
                 Response = v
+            if k == "Email_date":
+                DateTime = v
 
-            cur.execute("UPDATE emails SET Sender_Name=? , Sender_Email=? , Subject=? , Response=? WHERE id=? ", (Sender_Name, Sender_Email, Subject, Response, id))
+            cur.execute("UPDATE emails SET Sender_Name=? , Sender_Email=? , Subject=? , Response=?, DateTime=? WHERE id=? ", (Sender_Name, Sender_Email, Subject, Response, DateTime, id))
             # print("Emal updated successfuly \n\n")
 
     # print("##############")
@@ -249,7 +255,7 @@ if __name__ == '__main__':
     r = cur.fetchall()
     # print(r)
     r = r[::-1]
-    dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4]} for t in r}
+    dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4], "Email_date": t[5]} for t in r}
     json_string = json.dumps(dict_from_tuples)
     print(json_string)
         
