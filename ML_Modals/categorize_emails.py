@@ -1,5 +1,5 @@
 
-import torch, sqlite3, json, ollama
+import sqlite3, json, ollama
 
 con = sqlite3.connect("TodaysEmail.db")
 cur = con.cursor()

@@ -78,13 +78,18 @@ export default function Dashboard(){
                         Object.entries(value).map(([key1, val]) => (
                             <div key={key1}>
 
-                                <div className="absolute top-2 right-2/4">
-                                    Category : 
-                                </div>
+                                {key1 === "Category" && (
+                                    <div className="absolute top-2 right-2/4">
+                                        Category : {typeof val === 'object' ? JSON.stringify(val) : val}
+                                    </div>
+                                )}
 
+                                
+                                {key1 === "Priority" && (
                                 <div className="absolute top-2 right-64">
-                                    Priority : 
+                                    Priority : {typeof val === 'object' ? JSON.stringify(val) : val}
                                 </div>
+                                )}
 
                                 {key1 === "Email_date" && (
                                     <div className="absolute top-2 right-5">
@@ -92,7 +97,7 @@ export default function Dashboard(){
                                     </div>
                                 )}
 
-                                {key1 !== "Email_date" && (
+                                {key1 !== "Email_date" && key1 !== "Category" && key1 !== "Priority" && (
                                     <table>
                                         <tbody>
                                             <tr>

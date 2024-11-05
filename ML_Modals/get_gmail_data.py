@@ -1,6 +1,6 @@
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 from datetime import datetime
-import os, imaplib, email, ollama, json, sqlite3
+import os, imaplib, email, ollama, json, sqlite3, re
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
 
@@ -118,16 +118,17 @@ class GmailSummary:
 
             if "Email_"+str(email_id) in dict_from_tuples:
                 # print("Email_"+str(email_id), "already exists")
+                
                 continue
         
             details = self.SingleEmailDetails(email_id)
             # API_DATA.update({"Email "+str(email_id) : {}})
             
-            prompt = f"""Please summarize the following email:
+            prompt = f"""Please provide a short summary of this email:
 
                     {details}
 
-                    The summary should include the main points, any action items, and important dates or deadlines mentioned Or summarize according to the context of the email in a single paragraph.""" 
+                    """ 
 
             # print("#"*150)
             # print("\n\n\n")
@@ -160,10 +161,15 @@ class GmailSummary:
                 # print(chunk['message']['content'], end='', flush=True)
 
             category = self.Categorize_Email(response_content)
+            priority = self.Prioritize_Email(response_content)
+            
+            # print("\n\n\nType of json response ::::::\n", type(category))
             # category = category['message']['content']
             # print("\n\nhdhdkhdkjshd", category)
             # category = category.split("\n")
-            print(category)
+            # category = json.loads(category)
+            # print("After ::::")
+            # print(category)
             # category = {item.split(":")[0].strip() : item.split(":")[1].strip() for item in category}
             # print(category)
 
@@ -173,8 +179,8 @@ class GmailSummary:
                 "Subject":details['subject'],
                 "Response":response_content,
                 "Email_date":details['email_date'],
-                "Category": category['Category'],
-                "Priority": category['Priority']
+                "Category": category,
+                "Priority": priority,
             }})
             
                 
@@ -183,9 +189,9 @@ class GmailSummary:
                 'content': response_content
             })
 
-            print("\n\n\n")
-            for key, value in API_DATA.items():
-                print(key," : ", value, end="\n\n")
+            # print("\n\n\n")
+            # for key, value in API_DATA.items():
+            #     print(key," : ", value, end="\n\n")
 
             # print(API_DATA["Email_"+str(email_id)]['Category']['message']['content'])
 
@@ -203,9 +209,14 @@ class GmailSummary:
         response_data = response
 
         categories = ["Job Posting", "Inquiry", "Newsletter", "Application", "Confirmation", "Other"]
-        priority = ["urgent" ,"high", "medium", "low"]
+        
 
-        prompt = f"Categorize this email summary based on category {categories} in single word \n Summary : {response_data} \n Also analyze the priority : {priority} \n Response format:  json \n Category : Your response \n Priority : Your response"
+        # prompt = f"Categorize this email summary in one word based on category {categories} \n Summary : {response_data} \n  Response format:  json \n Example {{category : Answer}}"
+        prompt = f'''
+            Classify the response: {response_data} \n Into one of the categories from {categories} in a json format with the following structure :
+            {{"category" : "string"}}\n Return only a python dictionary.
+            
+        '''
 
         ollama_response = ollama.chat(model="llama3.2", messages=[{
             'role':'user',
@@ -213,27 +224,87 @@ class GmailSummary:
         }]
         )
 
-        
+        extracted_dict = {}
         ollama_response = ollama_response['message']['content']
-        print("Response :::::::::::::::::::\n",ollama_response)
+        json_match = re.search(r'\{.*\}', ollama_response)
+        if json_match:
+            json_str = json_match.group(0)  # Extract the JSON part as a string
+            try:
+                # Convert JSON string to a dictionary
+                extracted_dict = json.loads(json_str)
+                # print("\n\n",extracted_dict)
+            except json.JSONDecodeError:
+                print("Failed to parse JSON.")
+        else:
+            print("No JSON found in the text.")
+
+        # json_response = json.loads(ollama_response)
+        # print(type(json_response))
+        # json_response = {}
+        # for key, value in json_response.items():
+        #     print(key,"::", value)
+
+        # print("\nResponse while categorizing :::::::::::::::::::\n",json_response)
         # ollama_response = ollama_response.split("\n")
         # ollama_response = {item.split(":")[0].strip() : item.split(":")[1].strip() for item in ollama_response}
+        # print(type(ollama_response))
+        # print("\n\nOriginal response ===>>")
         # print(ollama_response)
+        # print("\n\nExtracted Dictionary:", extracted_dict)
+        x = extracted_dict.values()
+        x = ' '.join(extracted_dict.values())
+        # print(x)
 
-        return ollama_response
+        return x
+    
+    def Prioritize_Email(self, response):
+        response_data = response
+        priority = ["urgent" ,"high", "medium", "low"]
+
+        prompt = f'''
+            Classify the response: {response_data} \n Into one of the priorities from {priority} in a json format with the following structure :
+            {{"priority" : "string"}}\n Return only a python dictionary.
+            
+        '''
+
+        ollama_response = ollama.chat(model="llama3.2", messages=[{
+            'role':'user',
+            'content':prompt
+        }]
+        )
+
+        extracted_dict = {}
+        ollama_response = ollama_response['message']['content']
+        json_match = re.search(r'\{.*\}', ollama_response)
+        if json_match:
+            json_str = json_match.group(0)  # Extract the JSON part as a string
+            try:
+                # Convert JSON string to a dictionary
+                extracted_dict = json.loads(json_str)
+                # print("\n\n",extracted_dict)
+            except json.JSONDecodeError:
+                print("Failed to parse JSON.")
+        else:
+            print("No JSON found in the text.")
+
+        x = extracted_dict.values()
+        x = ' '.join(extracted_dict.values())
+        # print(x)
+
+        return x
 
 
 if __name__ == '__main__':
 
-    load_dotenv()
-    username = os.getenv("EMAIL_USER")
-    password = os.getenv("EMAIL_PASS")
+    # load_dotenv()
+    # username = os.getenv("EMAIL_USER")
+    # password = os.getenv("EMAIL_PASS")
 
     con = sqlite3.connect("TodaysEmail.db")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS emails(id, Sender_Name, Sender_Email, Subject, Response, DateTime, Category, Priority)")
 
-    obj = GmailSummary(username, password)
+    obj = GmailSummary("sahiljadhav25009@gmail.com", "owhx qsgn dmrc fbxi")
     obj.Login()
     APP_DATA = obj.generateResponse()  
     # print(json.dumps(APP_DATA))
@@ -300,7 +371,7 @@ if __name__ == '__main__':
             if k == "Priority":
                 Priority = v
 
-            cur.execute("UPDATE emails SET Sender_Name=? , Sender_Email=? , Subject=? , Response=?, DateTime=?, Category=?, Priority=? WHERE id=? ", (Sender_Name, Sender_Email, Subject, Response, DateTime,Category, Priority, id))
+            cur.execute("UPDATE emails SET Sender_Name=? , Sender_Email=? , Subject=? , Response=?, DateTime=?, Category=?, Priority=? WHERE id=? ", (Sender_Name, Sender_Email, Subject, Response, DateTime,Category,Priority, id))
             # print("Emal updated successfuly \n\n")
 
     # print("##############")
@@ -308,7 +379,7 @@ if __name__ == '__main__':
     r = cur.fetchall()
     # print(r)
     r = r[::-1]
-    dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4], "Email_date": t[5], "Category": t[6], "Priority": t[7]} for t in r}
+    dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4], "Email_date": t[5], "Category": t[6], "Priority":t[7]} for t in r}
     json_string = json.dumps(dict_from_tuples)
     print(json_string)
         
