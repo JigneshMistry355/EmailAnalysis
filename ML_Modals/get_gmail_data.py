@@ -124,11 +124,7 @@ class GmailSummary:
             details = self.SingleEmailDetails(email_id)
             # API_DATA.update({"Email "+str(email_id) : {}})
             
-            prompt = f"""Please provide a short summary of this email:
-
-                    {details}
-
-                    """ 
+            prompt = f"""Please generate a summary on this text : {details} """ 
 
             # print("#"*150)
             # print("\n\n\n")
@@ -208,13 +204,12 @@ class GmailSummary:
         # response = cur.execute("SELECT Response FROM emails")
         response_data = response
 
-        categories = ["Job Posting", "Inquiry", "Newsletter", "Application", "Confirmation", "Other"]
+        categories = ["Job Posting", "Inquiry", "Newsletter", "Application", "Confirmation"]
         
 
         # prompt = f"Categorize this email summary in one word based on category {categories} \n Summary : {response_data} \n  Response format:  json \n Example {{category : Answer}}"
         prompt = f'''
-            Classify the response: {response_data} \n Into one of the categories from {categories} in a json format with the following structure :
-            {{"category" : "string"}}\n Return only a python dictionary.
+            Classify the response: {response_data} into one of the categories from {categories} or according to you in a json format only with the following structure : {{"category" : "string"}}.
             
         '''
 
@@ -226,17 +221,20 @@ class GmailSummary:
 
         extracted_dict = {}
         ollama_response = ollama_response['message']['content']
+        # print("\n\nollama Response ==> ", ollama_response)
         json_match = re.search(r'\{.*\}', ollama_response)
         if json_match:
             json_str = json_match.group(0)  # Extract the JSON part as a string
             try:
                 # Convert JSON string to a dictionary
                 extracted_dict = json.loads(json_str)
-                # print("\n\n",extracted_dict)
+                
+                # print("\n\nCategory ==>",extracted_dict)
             except json.JSONDecodeError:
                 print("Failed to parse JSON.")
         else:
             print("No JSON found in the text.")
+            extracted_dict = {"category":"Unknown"}
 
         # json_response = json.loads(ollama_response)
         # print(type(json_response))
@@ -262,8 +260,7 @@ class GmailSummary:
         priority = ["urgent" ,"high", "medium", "low"]
 
         prompt = f'''
-            Classify the response: {response_data} \n Into one of the priorities from {priority} in a json format with the following structure :
-            {{"priority" : "string"}}\n Return only a python dictionary.
+            Classify the response: {response_data} into one of the priorities from {priority} in a json format only with the following structure : {{"priority" : "string"}}.
             
         '''
 
@@ -275,17 +272,20 @@ class GmailSummary:
 
         extracted_dict = {}
         ollama_response = ollama_response['message']['content']
+        # print("\n\nollama Response ==> ", ollama_response)
         json_match = re.search(r'\{.*\}', ollama_response)
         if json_match:
             json_str = json_match.group(0)  # Extract the JSON part as a string
             try:
                 # Convert JSON string to a dictionary
                 extracted_dict = json.loads(json_str)
-                # print("\n\n",extracted_dict)
+                
+                # print("\n\nPriority ==>",extracted_dict)
             except json.JSONDecodeError:
                 print("Failed to parse JSON.")
         else:
             print("No JSON found in the text.")
+            extracted_dict = {"category":"Unknown"}
 
         x = extracted_dict.values()
         x = ' '.join(extracted_dict.values())

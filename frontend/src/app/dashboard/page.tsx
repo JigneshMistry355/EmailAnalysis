@@ -36,31 +36,31 @@ export default function Dashboard(){
     }
 
         return (
-           <div className="relative flex bg-gray-300 h-full font-mono text-base">
+           <div className="relative flex bg-gray-300 h-full min-h-screen font-mono text-base">
                 <div className=" flex-row w-1/4 bg-gray-300">
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800 hover:cursor-pointer text-center">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800 hover:cursor-pointer text-center text-amber-300">
                         <button onClick={fetchData}>
-                              All Emails
+                              Email Summarization
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Sahil")}>
-                             Sahil
+                             Sentiment Analysis
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Tanay")}>
-                             Tanay
+                             Writing Assistance
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Deep")}>
-                             Deep
+                             Analytics and Report
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Hemant")}>
-                             Hemant
+                             Knowledge Management
                         </button>
                     </div>
                 </div>
