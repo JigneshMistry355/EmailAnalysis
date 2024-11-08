@@ -38,4 +38,5 @@ Laura Garcia
 Talent Acquisition Manager
 Creative Corp
 """
+
 save_draft(subject, sender, recipient, body)

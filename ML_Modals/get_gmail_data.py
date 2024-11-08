@@ -3,7 +3,7 @@ from datetime import datetime
 import os, imaplib, email, ollama, json, sqlite3, re
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
-
+from bs4 import BeautifulSoup
 
 class GmailSummary:
     def __init__(self, username, password):
@@ -88,9 +88,11 @@ class GmailSummary:
                 try:
                     # Get the email body
                     body = part.get_payload(decode=True).decode()
+                    body = BeautifulSoup(body, "html.parser")
+                    body = body.get_text()
                     history_Element["body"] = body
 
-                    split_gmail = body.split(" ")
+                    # split_gmail = body.split(" ")
                     # print("Body:", body)
                     # conversation_history.append(history_Element)
                     
@@ -117,6 +119,7 @@ class GmailSummary:
         for email_id in Emails:
 
             if "Email_"+str(email_id) in dict_from_tuples:
+                # print('#'*140)
                 # print("Email_"+str(email_id), "already exists")
                 
                 continue
@@ -124,7 +127,8 @@ class GmailSummary:
             details = self.SingleEmailDetails(email_id)
             # API_DATA.update({"Email "+str(email_id) : {}})
             
-            prompt = f"""Please generate a summary on this text : {details} """ 
+            # prompt = f""" Please provide a human readable short summary of this email body : {details} """ 
+            prompt = f"Summarize the following email content, focusing on key information only and ignoring any HTML tags or technical details:\n{details}"
 
             # print("#"*150)
             # print("\n\n\n")
@@ -144,7 +148,7 @@ class GmailSummary:
             })
 
             response = ollama.chat(
-                model = 'llama3.2', 
+                model = 'llama3.1:8b', 
                 stream = True,
                 messages = conversation_history
             )
@@ -156,6 +160,8 @@ class GmailSummary:
                 response_content += chunk['message']['content']
                 # print(chunk['message']['content'], end='', flush=True)
 
+            print("#"*150)
+            print("\nEmail_"+str(email_id))
             category = self.Categorize_Email(response_content)
             priority = self.Prioritize_Email(response_content)
             
@@ -193,27 +199,23 @@ class GmailSummary:
 
 
 
-            
+        # print("\n\n\n")
+        # for key, value in API_DATA.items():
+        #     print(key," : ", value, end="\n\n")
             
         con.close()
         return API_DATA
     
     def Categorize_Email(self, response):
-        # con = sqlite3.connect("TodaysEmail.db")
-        # cur = con.cursor()
-        # response = cur.execute("SELECT Response FROM emails")
+        
         response_data = response
 
         categories = ["Job Posting", "Inquiry", "Newsletter", "Application", "Confirmation"]
         
-
         # prompt = f"Categorize this email summary in one word based on category {categories} \n Summary : {response_data} \n  Response format:  json \n Example {{category : Answer}}"
-        prompt = f'''
-            Classify the response: {response_data} into one of the categories from {categories} or according to you in a json format only with the following structure : {{"category" : "string"}}.
-            
-        '''
+        prompt = f'''Categorize the response: {response_data} into one of the categories from {categories} or else categorize according to your understanding in one word. Provide your response in this format only : {{"category" : "string"}}. '''
 
-        ollama_response = ollama.chat(model="llama3.2", messages=[{
+        ollama_response = ollama.chat(model="llama3.1:8b", messages=[{
             'role':'user',
             'content':prompt
         }]
@@ -221,19 +223,18 @@ class GmailSummary:
 
         extracted_dict = {}
         ollama_response = ollama_response['message']['content']
-        # print("\n\nollama Response ==> ", ollama_response)
+        print("\n\nollama Response ==> ", ollama_response)
         json_match = re.search(r'\{.*\}', ollama_response)
         if json_match:
             json_str = json_match.group(0)  # Extract the JSON part as a string
             try:
                 # Convert JSON string to a dictionary
                 extracted_dict = json.loads(json_str)
-                
                 # print("\n\nCategory ==>",extracted_dict)
             except json.JSONDecodeError:
                 print("Failed to parse JSON.")
         else:
-            print("No JSON found in the text.")
+            # print("No JSON found in the text.")
             extracted_dict = {"category":"Unknown"}
 
         # json_response = json.loads(ollama_response)
@@ -259,20 +260,17 @@ class GmailSummary:
         response_data = response
         priority = ["urgent" ,"high", "medium", "low"]
 
-        prompt = f'''
-            Classify the response: {response_data} into one of the priorities from {priority} in a json format only with the following structure : {{"priority" : "string"}}.
-            
-        '''
+        prompt = f'''Prioritize the response: {response_data} into one of the priorities from {priority}. Provide your response in this format only: {{"priority" : "string"}}.'''
 
-        ollama_response = ollama.chat(model="llama3.2", messages=[{
+        ollama_response = ollama.chat(model="llama3.1:8b", messages=[{
             'role':'user',
             'content':prompt
         }]
         )
-
+        
         extracted_dict = {}
         ollama_response = ollama_response['message']['content']
-        # print("\n\nollama Response ==> ", ollama_response)
+        print("\n\nollama Response ==> ", ollama_response)
         json_match = re.search(r'\{.*\}', ollama_response)
         if json_match:
             json_str = json_match.group(0)  # Extract the JSON part as a string
@@ -284,8 +282,8 @@ class GmailSummary:
             except json.JSONDecodeError:
                 print("Failed to parse JSON.")
         else:
-            print("No JSON found in the text.")
-            extracted_dict = {"category":"Unknown"}
+            # print("No JSON found in the text.")
+            extracted_dict = {"priority":"Unknown"}
 
         x = extracted_dict.values()
         x = ' '.join(extracted_dict.values())

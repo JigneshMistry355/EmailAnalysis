@@ -38,38 +38,38 @@ export default function Dashboard(){
         return (
            <div className="relative flex bg-gray-300 h-full min-h-screen font-mono text-base">
                 <div className=" flex-row w-1/4 bg-gray-300">
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800 hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xlhover:cursor-pointer text-center text-amber-300">
                         <button onClick={fetchData}>
                               Email Summarization
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Sahil")}>
                              Sentiment Analysis
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Tanay")}>
                              Writing Assistance
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Deep")}>
                              Analytics and Report
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl text-gray-800  hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Hemant")}>
                              Knowledge Management
                         </button>
                     </div>
                 </div>
 
-                <div className="flex-row w-3/4 text-justify ">
+                <div className="flex-row w-3/4 text-justify  ">
                 
                 {summary && Object.entries(summary).map(([key, value]) => (
 
-                    <div className="relative flex-col mx-2 my-6 px-8 py-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0" key={key}>
+                    <div className="relative flex-col mx-2 my-6 px-8 py-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap" key={key}>
 
                     
                     
@@ -79,20 +79,20 @@ export default function Dashboard(){
                             <div key={key1}>
 
                                 {key1 === "Category" && (
-                                    <div className="absolute top-2 right-2/4">
+                                    <div className="absolute top-2 right-2/4 text-ellipsis overflow-hidden">
                                         Category : {typeof val === 'object' ? JSON.stringify(val) : val}
                                     </div>
                                 )}
 
                                 
                                 {key1 === "Priority" && (
-                                <div className="absolute top-2 right-64">
+                                <div className="absolute top-2 right-64 text-ellipsis overflow-hidden">
                                     Priority : {typeof val === 'object' ? JSON.stringify(val) : val}
                                 </div>
                                 )}
 
                                 {key1 === "Email_date" && (
-                                    <div className="absolute top-2 right-5">
+                                    <div className="absolute top-2 right-5 text-ellipsis overflow-hidden">
                                         {typeof val === 'object' ? JSON.stringify(val) : val}
                                     </div>
                                 )}
@@ -104,7 +104,7 @@ export default function Dashboard(){
                                                 <th className="w-36 align-top">
                                                     <strong className="text-black">{key1}:</strong>
                                                 </th>
-                                                <td className="text-justify ">
+                                                <td className="text-justify inline text-wrap">
                                                     {typeof val === 'object' ? JSON.stringify(val) : val}
                                                 </td>
                                             </tr>
