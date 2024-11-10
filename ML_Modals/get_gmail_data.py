@@ -376,9 +376,17 @@ if __name__ == '__main__':
     cur.execute("SELECT * FROM emails")
     r = cur.fetchall()
     # print(r)
+
+    # Reverse the order to Latest on top 
     r = r[::-1]
+
+    # Extract values from tuples into dictionary
     dict_from_tuples = {t[0]: {"Sender_Name": t[1], "Sender_Email": t[2], "Subject": t[3], "Response": t[4], "Email_date": t[5], "Category": t[6], "Priority":t[7]} for t in r}
+
+    # Convert dictionary into a json string
     json_string = json.dumps(dict_from_tuples)
+
+    # This string is caught by main.py file
     print(json_string)
         
 
