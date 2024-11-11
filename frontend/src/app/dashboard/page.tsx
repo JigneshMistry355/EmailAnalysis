@@ -83,36 +83,38 @@ export default function Dashboard(){
     const sortByPriority = () => {
         const priorityOrder = ["urgent", "high", "medium", "low"];
         if (summary) {
-            const sortedByPriority = Object.keys(summary).sort((a, b) => {
-                return summary[a].Priority
-                .localeCompare(summary[b].Priority
-                );
-            // const sortedByPriority = Object.keys(summary).sort((a, b) => {
-            //     // Get the index of each priority in the priorityOrder array
-            //     const priorityA = priorityOrder.indexOf(a);
-            //     const priorityB = priorityOrder.indexOf(b);
-            //     // Sort by priority index (lower index means higher priority)
-            //     return priorityA - priorityB;
+            const sortedByPriority = Object.values(summary).sort((a, b) => {
+                // return summary[a].Priority
+                // .localeCompare(summary[b].Priority
+                // );
+                return priorityOrder.indexOf(a.Priority) - priorityOrder.indexOf(b.Priority);
             });
-            
+            console.log("Sorted By Priority ==> \n");
+            console.log(sortedByPriority);
+            // if (summary) {
+            //     const sortedByPriority = Object.keys(summary).sort((a, b) => {
+            //         return priorityOrder.indexOf(a) - priorityOrder.indexOf(b);
+            //     });
+            // }
             // Map sorted keys to the summary values
-            const sortedSummary = sortedByPriority.map(key => summary[key]);
+            // const sortedSummary = sortedByPriority.map(values => summary[key]);
             
-            const emailSummary = sortedSummary.map(item => ({
-                Sender_Name: item.Sender_Name,
-                Sender_Email: item.Sender_Email,
-                Subject: item.Subject,
-                Response: item.Response,
-                Email_date: item.Email_date,
-                Category: item.Category,
-                Priority: item.Priority,
-            }));
+            // const emailSummary = sortedSummary.map(item => ({
+            //     Sender_Name: item.Sender_Name,
+            //     Sender_Email: item.Sender_Email,
+            //     Subject: item.Subject,
+            //     Response: item.Response,
+            //     Email_date: item.Email_date,
+            //     Category: item.Category,
+            //     Priority: item.Priority,
+            // }));
 
             setReverseDate(false);
             setSortByCategory(false);
             setSortedByPriority(true);
     
-            console.log(emailSummary);
+            // console.log(emailSummary);
+            setPrioritySorted(sortedByPriority);
         }
     };
     
@@ -205,6 +207,49 @@ export default function Dashboard(){
 
 
                 {!reverseDate && sortByCategory && categorySorted?.map((item, index) => (
+                        <div className="relative flex-col mx-2 my-6 px-8 py-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
+                           
+                                    {Object.entries(item).map(([key, val]) => (
+                                        <div key={key}>
+                                            {key === "Category" && (
+                                                <div className="absolute top-2 right-2/4 text-ellipsis overflow-hidden">
+                                                    Category : {typeof val === 'object' ? JSON.stringify(val) : val}
+                                                </div>
+                                            )}
+
+                                            {key === "Priority" && (
+                                                <div className="absolute top-2 right-64 text-ellipsis overflow-hidden">
+                                                    Priority : {typeof val === 'object' ? JSON.stringify(val) : val}
+                                                </div>
+                                            )}
+
+                                            {key === "Email_date" && (
+                                                <div className="absolute top-2 right-5 text-ellipsis overflow-hidden">
+                                                    {typeof val === 'object' ? JSON.stringify(val) : val}
+                                                </div>
+                                            )}
+
+                                            { key !=="Email_date" && key !== "Category" && key !== "Priority" && (
+                                            <table key={index}>
+                                                <tbody>
+                                                    <tr key={key}>
+                                                        <th className="w-36 align-top">
+                                                            <strong className="text-black">{key} : </strong>
+                                                        </th>
+                                                        <td className="text-justify inline text-wrap">
+                                                            {typeof val === 'object' ? JSON.stringify(val) : val}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            )}
+                                        </div>
+                                    ))}
+                                
+                        </div>
+                    ))}
+
+                    {!reverseDate && sortedByPriority && prioritySorted?.map((item, index) => (
                         <div className="relative flex-col mx-2 my-6 px-8 py-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
                            
                                     {Object.entries(item).map(([key, val]) => (
