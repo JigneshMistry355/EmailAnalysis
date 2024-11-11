@@ -42,6 +42,12 @@ export default function Dashboard(){
         }
       }, [summary]);
 
+    const sortByDateList = () => {
+        setSortByCategory(false);
+        setReverseDate(true);
+        setSortedByPriority(false);
+    }
+
     const fetchData = async () => {
         try {
             console.log("Into fetchData try ... fetching data!")
@@ -186,6 +192,7 @@ export default function Dashboard(){
                         </MenuItem>
                         <MenuItem>
                             <button
+                            onClick={sortByDateList}
                             className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
                             >
                             Date
