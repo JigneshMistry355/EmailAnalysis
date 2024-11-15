@@ -1,58 +1,99 @@
-import imaplib, datetime, os, email
+import imaplib, datetime, os, email, smtplib, ollama, time
 from email.message import EmailMessage
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
 from dotenv import load_dotenv
 import email.policy
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 load_dotenv()
-EMAIL_ACCOUNT = os.getenv("EMAIL_USER")
-PASSWORD = os.getenv("EMAIL_PASS")
+EMAIL_ACCOUNT = os.getenv("NEW_USER")
+PASSWORD = os.getenv("NEW_PASSWORD")
 IMAP_SERVER = "imap.gmail.com"
+SMTP_SERVER = "smtp.gmail.com"
+port = 587
 
-def save_draft(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD):
+def draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER):
+
+    message = MIMEMultipart()
+    message["From"] = sender
+    message["To"] = recipient
+    message["Subject"] = subject
+    prompt = f"generate a formal response for {sender}. Here is the summary of his email : {body}"
+    ollama_response = ollama.chat(
+        model = 'llama3.1:8b', 
+        messages=[{
+            'role':'user',
+            'content':prompt
+        }]
+    )
+    ollama_response = ollama_response['message']['content']
+    message.attach(MIMEText(ollama_response, 'plain'))
+
+    try:
+        smtp_server = smtplib.SMTP(SMTP_SERVER, port) 
+        smtp_server.starttls()
+        smtp_server.login(EMAIL_ACCOUNT, PASSWORD)
+
+        email_string = message.as_string()
+
+        imap_server = imaplib.IMAP4_SSL(IMAP_SERVER)
+        imap_server.login(EMAIL_ACCOUNT, PASSWORD)
+        imap_server.select('[Gmail]/Drafts')
+        imap_server.append('[Gmail]/Drafts', '', imaplib.Time2Internaldate(time.time()), email_string.encode('utf-8'))
+
+        # print("Process Complete..!")
+
+    except Exception as e:
+        print(f"An error occured: {e}")
+    finally:
+        smtp_server.quit()
+        imap_server.close()
+
+
+def send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port):
+
+    message = MIMEMultipart()
+    message["From"] = sender
+    message["To"] = recipient
+    message["Subject"] = subject
+
+    prompt = f"generate a formal response for {sender}. Here is the summary of his email : {body}"
+    ollama_response = ollama.chat(
+        model = 'llama3.1:8b', 
+        messages=[{
+            'role':'user',
+            'content':prompt
+        }]
+    )
+    ollama_response = ollama_response['message']['content']
+    message.attach(MIMEText(ollama_response, 'plain'))
+    # message.add_header('X-Unsent', '1')
     
-    # Set up the email message
-    msg = EmailMessage(policy=email.policy.SMTP)
-    msg['Subject'] = subject
-    msg['From'] = sender
-    msg['To'] = recipient
-    msg.set_content(body)
-    msg_date = datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S")
-
-    IMAP_SERVER = "imap.gmail.com"
-    with imaplib.IMAP4_SSL(IMAP_SERVER, 993) as imap:
-        try:
-            imap.login(EMAIL_ACCOUNT, PASSWORD)
-            print("Logged in successfully!")
-        
-        
-            imap.select("Drafts")
-
-            timestamp = datetime.datetime.now().strftime("%d-%b-%Y %H:%M:%S")
-            imap.append("Drafts","", imaplib.Time2Internaldate(datetime.datetime.now().timestamp()), msg.as_bytes())
-            print("Email Draft saved .. !")
-        except imaplib.IMAP4.error as e:
-            print(f"Login failed: {e}")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+    try:
+        with smtplib.SMTP(SMTP_SERVER, port) as server:
+            server.starttls()
+            server.login(EMAIL_ACCOUNT, PASSWORD)
+            
+            # Send email
+            server.sendmail(sender, recipient, message.as_string())
+            
+    except smtplib.SMTPException as e:
+        print(f"Login failed: {e}")
+    except Exception as e:
+        print(f"An error occurred while sending the email: {e}")
+   
 
 
-subject = "Test Email from Sahil"
-sender = "sahiljadhav25009@gmail.com"
+subject = "Test Email from Jignesh today"
+sender = "jigneshmistry1997@gmail.com"
 recipient = "jvmistry7@gmail.com"
-body = """\
-Dear Applicant,
-
-We are thrilled to announce an opening for a Marketing Specialist at Creative Corp. If you’re passionate about brand-building and engaging with customers through innovative marketing campaigns, this is an opportunity to consider.
-
-Please visit our careers page to learn more about the role, responsibilities, and how to apply. We look forward to receiving your application.
-
-Best regards,
-Laura Garcia
-Talent Acquisition Manager
-Creative Corp
+body = """
+aaa bbb c d eeeeeeee ffffff
 """
 
-save_draft(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD)
+# send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
+draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
+# {"Sender_Name":"=?utf-8?Q?Kotak_Fastrack_Personal_Loan_=F0=9F=92=B0?=","Sender_Email":"retailproducts@kotak.in","Subject":"Wohoo😍 Rs.100000 is pre-approved for you, Jignesh Mistry","Response":"Here is a summary of the email content, focusing on key information only:\n\n* The sender is Kotak Mahindra Bank.\n* A pre-approved loan of ₹100,000 is available.\n* Features include:\n\t+ Instant disbursement\n\t+ Zero documentation\n\t+ Tenure of 36 months\n* Click here to view complete terms and conditions.","Email_date":"13-Nov-2024 02:22:58","Category":"Offer","Priority":"low"}

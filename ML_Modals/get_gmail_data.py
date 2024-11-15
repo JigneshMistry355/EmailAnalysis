@@ -4,6 +4,7 @@ import os, imaplib, email, ollama, json, sqlite3, re
 from email.header import decode_header
 from email.utils import parsedate_to_datetime
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
 class GmailSummary:
     def __init__(self, username, password):
@@ -294,15 +295,15 @@ class GmailSummary:
 
 if __name__ == '__main__':
 
-    # load_dotenv()
-    # username = os.getenv("EMAIL_USER")
-    # password = os.getenv("EMAIL_PASS")
+    load_dotenv()
+    username = os.getenv("NEW_USER")
+    password = os.getenv("NEW_PASSWORD")
 
     con = sqlite3.connect("TodaysEmail.db")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS emails(id, Sender_Name, Sender_Email, Subject, Response, DateTime, Category, Priority)")
 
-    obj = GmailSummary("sahiljadhav25009@gmail.com", "owhx qsgn dmrc fbxi")
+    obj = GmailSummary(username, password)
     obj.Login()
     APP_DATA = obj.generateResponse()  
     # print(json.dumps(APP_DATA))

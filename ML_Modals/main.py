@@ -7,6 +7,9 @@ from typing import Annotated
 from datetime import datetime, timedelta, timezone
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
+from typing import Optional
+from Generate_email import send_email, draft_email
+from dotenv import load_dotenv
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -41,7 +44,7 @@ class User(BaseModel):
 class UserInDB(User):
     hashed_password : str
     
-pwd_context = CryptContext(schemes = ["bcrypt"], decrypted = "auto") 
+pwd_context = CryptContext(schemes = ["bcrypt"], deprecated = "auto") 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -154,6 +157,56 @@ def run_script():
     except Exception as e:
         return {"message":"An error occured", "error": str(e)}
     
+# class Item(BaseModel):
+#     Sender_Name : str | None = None
+#     Sender_Email : str | None = None
+#     Subject : str | None = None
+#     Response : str | None = None
+#     Email_date : str | None = None
+#     Category : str | None = None
+#     Priority : str | None = None
 
-    
+class Item(BaseModel):
+    Sender_Name: Optional[str] = None
+    Sender_Email: Optional[str] = None
+    Subject: Optional[str] = None
+    Response: Optional[str] = None
+    Email_date: Optional[str] = None  # You can also use datetime if date parsing is required
+    Category: Optional[str] = None
+    Priority: Optional[str] = None
 
+@app.post("/send_email/")
+async def email_response(data : Item):
+    load_dotenv()
+    EMAIL_ACCOUNT = os.getenv("NEW_USER")
+    PASSWORD = os.getenv("NEW_PASSWORD")
+    SMTP_SERVER = "smtp.gmail.com"
+    port = 587
+    subject = data.Subject
+    sender = data.Sender_Name
+    recipient = data.Sender_Email
+    body = "This is a demo response ."
+
+    print("Executing function")
+    send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
+    print(data.Sender_Name)
+    return {"Message": "Email sent successfully"}
+
+# send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
+@app.post("/draft_email/")
+async def email_response(data : Item):
+    load_dotenv()
+    EMAIL_ACCOUNT = os.getenv("NEW_USER")
+    PASSWORD = os.getenv("NEW_PASSWORD")
+    SMTP_SERVER = "smtp.gmail.com"
+    IMAP_SERVER = "imap.gmail.com"
+    port = 587
+    subject = data.Subject
+    sender = data.Sender_Name
+    recipient = data.Sender_Email
+    body = "This is a demo response ."
+
+    print("Executing function")
+    draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
+    print(data.Sender_Name)
+    return {"Message": "Draft saved successfully"}
