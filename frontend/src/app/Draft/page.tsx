@@ -1,10 +1,65 @@
 'use client'
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Draft(){
 
-    const router = useRouter();
+    const router = useRouter(); 
+    const searchParams = useSearchParams();
+    const data = searchParams.get('data');
 
+    const [to, setTo] = useState('');
+    const [subject, setSubject] = useState('');
+    const [body, setBody] = useState<string | undefined>('');
+
+    const parsedData = data ? JSON.parse(decodeURIComponent(data)) : null;
+
+    useEffect(() => {
+        if (parsedData) {
+            setTo(parsedData.To);
+            setSubject(parsedData.Subject)
+            setBody(parsedData.Body);
+        }
+    
+    },[]) // ---> Set this empty array for initial render
+    // This will allow to make changes to the text, else not
+    // Handle change after that
+
+    const handleBodyChange = (event : any) => {
+        setBody(event.target.value);
+    }
+
+    const handleSend = async () => {
+        console.log("Items to send", parsedData);
+        try {
+            const response = await axios.post('http://localhost:8000/send_email/', parsedData);
+            console.log(response.status);
+            console.log(response.data);
+            alert("Email sent successfully..!")
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error("Axios error:", error.response?.data);
+            } else {
+                console.error("Unexpected error:", error);
+            }
+        }
+    }
+
+    
+
+    
+
+    console.log("Parsed data ==>")
+    console.log(parsedData);
+    console.log(parsedData.Subject)
+    console.log(parsedData.Body)
+    console.log("###### ",parsedData.Sender_Name)
+
+    console.log("After set==>")
+    console.log(to);
+    console.log(subject);
+    console.log(body);
 
     return (
         <>
@@ -44,7 +99,12 @@ export default function Draft(){
                         <label>To</label>
                     </div>
                     <div className="w-5/6">   
-                        <input className="w-full border-2 px-1 border-slate-300 h-9 shadow-lg rounded-md" type="text" />
+                        <input 
+                            className="w-full border-2 px-1 border-slate-300 h-9 shadow-lg rounded-md" 
+                            type="text" 
+                            value={to} 
+                            onChange={(e) => setTo(e.target.value)}
+                            />
                     </div>
                 </div>
                 <div className="flex flex-row m-2 p-3 w-full items-center">
@@ -52,7 +112,7 @@ export default function Draft(){
                         <label>Subject</label>
                     </div>
                     <div className="flex flex-row w-5/6 ">
-                        <input className="w-full border-2 px-1 border-slate-300 h-9 shadow-lg rounded-md" type="text" />
+                        <input className="w-full border-2 px-1 border-slate-300 h-9 shadow-lg rounded-md" type="text" value={subject} onChange={(e) => setSubject(e.target.value)} />
                     </div>
                 </div>
                 <div className="flex flex-row m-2 p-3 w-full">
@@ -60,13 +120,15 @@ export default function Draft(){
                         <label>Body</label>
                     </div>
                     <div className="flex flex-row w-5/6 ">
-                        <textarea className="w-full border-2 border-slate-300 h-96 shadow-lg"  rows={20}/>
+                        <textarea className="w-full border-2 border-slate-300 h-96 shadow-lg p-4" value={body} onChange = {handleBodyChange}  rows={20}/>
                     </div>
                 </div>
                 <div className="flex flex-row-reverse m-2 p-3 w-full items-center">
                     
                     <div className="flex flex-row-reverse w-5/6 ">
-                        <button className="bg-yellow-400 hover:bg-yellow-500 mx-3 p-2 rounded-md min-w-24 shadow-lg" >Send</button>
+                        <button 
+                            className="bg-yellow-400 hover:bg-yellow-500 mx-3 p-2 rounded-md min-w-24 shadow-lg"
+                            onClick={handleSend} >Send</button>
                     </div>
                 </div>
 

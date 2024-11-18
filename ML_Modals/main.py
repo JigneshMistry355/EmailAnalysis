@@ -183,14 +183,17 @@ async def email_response(data : Item):
     SMTP_SERVER = "smtp.gmail.com"
     port = 587
     subject = data.Subject
-    sender = data.Sender_Name
+    sender = EMAIL_ACCOUNT
     recipient = data.Sender_Email
-    body = "This is a demo response ."
+    body = data.Response
 
     print("Executing function")
-    send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
-    print(data.Sender_Name)
-    return {"Message": "Email sent successfully"}
+    response = send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
+    print("Subject: ",subject)
+    print("Sender Email: ",sender)
+    print("Receiver: ",recipient)
+
+    return {"Message": response}
 
 # send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
 @app.post("/draft_email/")
@@ -204,9 +207,10 @@ async def email_response(data : Item):
     subject = data.Subject
     sender = data.Sender_Name
     recipient = data.Sender_Email
-    body = "This is a demo response ."
+    body = data.Response
 
     print("Executing function")
-    draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
-    print(data.Sender_Name)
-    return {"Message": "Draft saved successfully"}
+    # print("Details ==> ",json.dumps(subject), sender, recipient)
+    response = draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
+    # print(response)
+    return response

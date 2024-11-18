@@ -161,8 +161,8 @@ class GmailSummary:
                 response_content += chunk['message']['content']
                 # print(chunk['message']['content'], end='', flush=True)
 
-            print("#"*150)
-            print("\nEmail_"+str(email_id))
+            # print("#"*150)
+            # print("\nEmail_"+str(email_id))
             category = self.Categorize_Email(response_content)
             priority = self.Prioritize_Email(response_content)
             
@@ -224,7 +224,7 @@ class GmailSummary:
 
         extracted_dict = {}
         ollama_response = ollama_response['message']['content']
-        print("\n\nollama Response ==> ", ollama_response)
+        # print("\n\nollama Response ==> ", ollama_response)
         json_match = re.search(r'\{.*\}', ollama_response)
         if json_match:
             json_str = json_match.group(0)  # Extract the JSON part as a string
@@ -271,7 +271,7 @@ class GmailSummary:
         
         extracted_dict = {}
         ollama_response = ollama_response['message']['content']
-        print("\n\nollama Response ==> ", ollama_response)
+        # print("\n\nollama Response ==> ", ollama_response)
         json_match = re.search(r'\{.*\}', ollama_response)
         if json_match:
             json_str = json_match.group(0)  # Extract the JSON part as a string
