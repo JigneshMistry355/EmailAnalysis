@@ -198,28 +198,28 @@ export default function Dashboard(){
 
         return (
            <div className="relative flex bg-gray-100 h-full min-h-screen font-mono text-base pt-7">
-                <div className=" flex-row w-1/4 bg-gray-100">
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xlhover:cursor-pointer text-center text-amber-300">
-                        <button onClick={fetchData}>
+                <div className=" flex-row w-1/4 bg-gray-100 mt-4">
+                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xlhover:cursor-pointer text-center text-amber-300">
+                        <button onClick={() => {}}>
                               Email Summarization
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={sortData}>
                              Sentiment Analysis
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => router.push('/Draft')}>
                              Writing Assistance
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Deep")}>
                              Analytics and Report
                         </button>
                     </div>
-                    <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Hemant")}>
                              Knowledge Management
                         </button>
@@ -227,6 +227,10 @@ export default function Dashboard(){
                 </div>
 
                 <div className="flex-row w-3/4 text-justify">
+
+                <div className=" absolute right-32 inline-block text-left top-2">
+                    <button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" onClick={fetchData}>Refresh</button>
+                </div>
 
                 <Menu as="div" className=" absolute right-3 inline-block text-left top-2">
                     <div>
@@ -293,7 +297,7 @@ export default function Dashboard(){
                 )}
 
                 {!isLoading && !reverseDate && sortByCategory && categorySorted?.map((item, index) => (
-                        <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
+                        <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-200 to-blue-300 rounded-md shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
                            
                                     {Object.entries(item).map(([key, val]) => (
                                         <div key={key}>
@@ -340,7 +344,7 @@ export default function Dashboard(){
                     ))}
 
                     {!isLoading && !reverseDate && sortedByPriority && prioritySorted?.map((item, index) => (
-                        <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
+                        <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-200 to-blue-300 rounded-md shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
                            
                                     {Object.entries(item).map(([key, val]) => (
                                         <div key={key}>
@@ -389,7 +393,7 @@ export default function Dashboard(){
                 
                 {!isLoading && summary && reverseDate===true && Object.entries(summary).map(([key, value]) => (
 
-                    <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap" key={key}>
+                    <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-200 to-blue-300 rounded-md shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap" key={key}>
 
                     
                     
