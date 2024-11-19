@@ -31,7 +31,7 @@ export default function Draft(){
     }
 
     const x = {Subject: 'Boost Your Gen AI Skills: Special webinar series on Gen AI', Sender_Name: 'TechGig Webinar', To: 'expertspeak@techgig.com', Body: "Here's a formal response email body from jigneshmi…mation from my end.\n\nBest regards,\nJignesh Mistry"}
-    
+
     const handleSend = async () => {
         console.log("Items to send", parsedData);
         try {
@@ -67,35 +67,35 @@ export default function Draft(){
         <>
         
         <div className="relative flex bg-gray-100 h-full min-h-screen font-mono text-base">
-            <div className=" flex-row w-1/4 bg-gray-100">
-                <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xlhover:cursor-pointer text-center text-amber-300">
+            <div className=" flex-row w-1/4 bg-gray-100 mt-7">
+                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xlhover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => router.push('/dashboard')}>
                             Email Summarization
                     </button>
                 </div>
-                <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => alert("Showing data related to Tanay")}>
                             Sentiment Analysis
                     </button>
                 </div>
-                <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => router.push('#')}>
                             Writing Assistance
                     </button>
                 </div>
-                <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => alert("Showing data related to Deep")}>
                             Analytics and Report
                     </button>
                 </div>
-                <div className="flex-col mx-2 my-6 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-2xl shadow-xl hover:cursor-pointer text-center text-amber-300">
+                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => alert("Showing data related to Hemant")}>
                             Knowledge Management
                     </button>
                 </div>
             </div>
 
-            <div className="flex-row m-6 p-3 h-fit w-full text-justify bg-slate-300 rounded-lg shadow-lg">
+            <div className="flex-row m-6 mt-9 p-3 h-fit w-3/4 text-justify bg-slate-300 rounded-md shadow-lg">
                 <div className="flex flex-row m-2 p-3 w-full items-center">
                     <div className="w-1/6">
                         <label>To</label>
