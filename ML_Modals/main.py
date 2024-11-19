@@ -175,8 +175,17 @@ class Item(BaseModel):
     Category: Optional[str] = None
     Priority: Optional[str] = None
 
+class SendItems(BaseModel):
+    Sender_Name : Optional[str] = None
+    Body : Optional[str] = None
+    Subject : Optional[str] = None
+    To : Optional[str] = None
+    Email_date: Optional[str] = None  # You can also use datetime if date parsing is required
+    Category: Optional[str] = None
+    Priority: Optional[str] = None
+
 @app.post("/send_email/")
-async def email_response(data : Item):
+async def email_response(data : SendItems):
     load_dotenv()
     EMAIL_ACCOUNT = os.getenv("NEW_USER")
     PASSWORD = os.getenv("NEW_PASSWORD")
@@ -184,14 +193,14 @@ async def email_response(data : Item):
     port = 587
     subject = data.Subject
     sender = EMAIL_ACCOUNT
-    recipient = data.Sender_Email
-    body = data.Response
+    recipient = data.To
+    body = data.Body
 
     print("Executing function")
     response = send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
-    print("Subject: ",subject)
-    print("Sender Email: ",sender)
-    print("Receiver: ",recipient)
+    print("Subject: ", subject)
+    print("Sender Email: ", sender)
+    print("Receiver: ", recipient)
 
     return {"Message": response}
 

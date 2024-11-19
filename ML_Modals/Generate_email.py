@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import email.policy
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from datetime import datetime
 
 
 load_dotenv()
@@ -14,6 +15,58 @@ PASSWORD = os.getenv("NEW_PASSWORD")
 IMAP_SERVER = "imap.gmail.com"
 SMTP_SERVER = "smtp.gmail.com"
 port = 587
+
+######## """Format the date to DD-MMM-YYYY.""" ###########   
+def DateTimeFormat(date_obj):
+    """Format the date to DD-MMM-YYYY."""
+    return date_obj.strftime("%d-%b-%Y")
+
+def login(SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD):
+    try:
+        smtp_server = smtplib.SMTP(SMTP_SERVER, port) 
+        smtp_server.starttls()
+        smtp_server.login(EMAIL_ACCOUNT, PASSWORD)
+    except Exception as e:
+        print(f"An error occured: {e}")
+   
+
+
+####### """Retrieve emails received today.""" ############
+def getAllFDraft(EMAIL_ACCOUNT, PASSWORD):
+    dateTime = datetime.now()
+
+    # login(SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD)
+
+    imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+
+    try:
+        imap.login(EMAIL_ACCOUNT, PASSWORD)
+    except imaplib.IMAP4.error as e:
+        raise Exception("Authentication failed. Please check your credentials.") from e
+
+    # Select the Draft
+    status, mailbox = imap.select("[Gmail]/Drafts")
+    if status != 'OK':
+        raise Exception("Failed to select Drafts folder.")
+    
+    # Specify the date in DD-MMM-YYYY format (e.g., 17-Oct-2024)
+    search_date = DateTimeFormat(dateTime)
+
+    # Search emails received on or after this date
+    status, messages = imap.search(None, 'BEFORE', search_date)
+    if status != 'OK':
+        raise Exception(f"IMAP search failed with status: {status}")
+    # messages --> an array that contains binary id of each email in the inbox in a single string 
+    # eg. [b'abcd efgh ijkl mnop qrst']
+
+    # Get the list of email IDs returned by the search
+    email_ids = messages[0].split()
+
+    # print(f"Found {len(email_ids)} emails since {search_date}")
+    print(f"Found {len(email_ids)} emails since {search_date}: {email_ids}")
+    return email_ids
+
+getAllFDraft(EMAIL_ACCOUNT, PASSWORD)
 
 def draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER):
     
@@ -64,7 +117,7 @@ def draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_
 def send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port):
 
     message = MIMEMultipart()
-    message["From"] = EMAIL_ACCOUNT
+    message["From"] = sender
     message["To"] = recipient
     message["Subject"] = subject
 

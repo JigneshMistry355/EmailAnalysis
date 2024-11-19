@@ -30,6 +30,8 @@ export default function Draft(){
         setBody(event.target.value);
     }
 
+    const x = {Subject: 'Boost Your Gen AI Skills: Special webinar series on Gen AI', Sender_Name: 'TechGig Webinar', To: 'expertspeak@techgig.com', Body: "Here's a formal response email body from jigneshmi…mation from my end.\n\nBest regards,\nJignesh Mistry"}
+    
     const handleSend = async () => {
         console.log("Items to send", parsedData);
         try {
@@ -52,14 +54,14 @@ export default function Draft(){
 
     console.log("Parsed data ==>")
     console.log(parsedData);
-    console.log(parsedData.Subject)
-    console.log(parsedData.Body)
-    console.log("###### ",parsedData.Sender_Name)
+    // console.log(parsedData.Subject)
+    // console.log(parsedData.Body)
+    // console.log("###### ",parsedData.Sender_Name)
 
-    console.log("After set==>")
-    console.log(to);
-    console.log(subject);
-    console.log(body);
+    // console.log("After set==>")
+    // console.log(to);
+    // console.log(subject);
+    // console.log(body);
 
     return (
         <>
