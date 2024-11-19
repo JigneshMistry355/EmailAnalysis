@@ -7,7 +7,7 @@ import email.policy
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
-
+from bs4 import BeautifulSoup
 
 load_dotenv()
 EMAIL_ACCOUNT = os.getenv("NEW_USER")
@@ -15,37 +15,54 @@ PASSWORD = os.getenv("NEW_PASSWORD")
 IMAP_SERVER = "imap.gmail.com"
 SMTP_SERVER = "smtp.gmail.com"
 port = 587
+imap_port = 993
 
 ######## """Format the date to DD-MMM-YYYY.""" ###########   
 def DateTimeFormat(date_obj):
     """Format the date to DD-MMM-YYYY."""
     return date_obj.strftime("%d-%b-%Y")
 
-def login(SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD):
+def login(IMAP_SERVER, SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD):
     try:
+        imap_server = imaplib.IMAP4_SSL(IMAP_SERVER)
+        imap_server.login(EMAIL_ACCOUNT, PASSWORD)
         smtp_server = smtplib.SMTP(SMTP_SERVER, port) 
         smtp_server.starttls()
         smtp_server.login(EMAIL_ACCOUNT, PASSWORD)
+    except imaplib.IMAP4.error as e:
+        raise Exception("Authentication failed. Please check your credentials.") from e
+    except smtplib.SMTPException as e:
+        print(f"Authentication failed. Please check your credentials.: {e}")
     except Exception as e:
         print(f"An error occured: {e}")
    
 
 
 ####### """Retrieve emails received today.""" ############
-def getAllFDraft(EMAIL_ACCOUNT, PASSWORD):
+def getAllDraft(IMAP_SERVER, SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD, port):
+
+    # Get current Date & Time
     dateTime = datetime.now()
 
-    # login(SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD)
+    # login(IMAP_SERVER, SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD)
 
-    imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+    # imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)
 
     try:
-        imap.login(EMAIL_ACCOUNT, PASSWORD)
+        imap_server = imaplib.IMAP4_SSL(IMAP_SERVER)
+        imap_server.login(EMAIL_ACCOUNT, PASSWORD)
+        smtp_server = smtplib.SMTP(SMTP_SERVER, port) 
+        smtp_server.starttls()
+        smtp_server.login(EMAIL_ACCOUNT, PASSWORD)
     except imaplib.IMAP4.error as e:
         raise Exception("Authentication failed. Please check your credentials.") from e
+    except smtplib.SMTPException as e:
+        print(f"Authentication failed. Please check your credentials.: {e}")
+    except Exception as e:
+        print(f"An error occured: {e}")
 
     # Select the Draft
-    status, mailbox = imap.select("[Gmail]/Drafts")
+    status, mailbox = imap_server.select("[Gmail]/Drafts")
     if status != 'OK':
         raise Exception("Failed to select Drafts folder.")
     
@@ -53,7 +70,7 @@ def getAllFDraft(EMAIL_ACCOUNT, PASSWORD):
     search_date = DateTimeFormat(dateTime)
 
     # Search emails received on or after this date
-    status, messages = imap.search(None, 'BEFORE', search_date)
+    status, messages = imap_server.search(None, 'BEFORE', search_date)
     if status != 'OK':
         raise Exception(f"IMAP search failed with status: {status}")
     # messages --> an array that contains binary id of each email in the inbox in a single string 
@@ -64,9 +81,76 @@ def getAllFDraft(EMAIL_ACCOUNT, PASSWORD):
 
     # print(f"Found {len(email_ids)} emails since {search_date}")
     print(f"Found {len(email_ids)} emails since {search_date}: {email_ids}")
+
+    for email_id in email_ids:
+        print(getSingleDraftDetails(email_id, IMAP_SERVER, SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD, port))
+
     return email_ids
 
-getAllFDraft(EMAIL_ACCOUNT, PASSWORD)
+def getSingleDraftDetails(email_id, IMAP_SERVER, SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD, port):
+
+    history_Element = {}
+
+    try:
+        imap_server = imaplib.IMAP4_SSL(IMAP_SERVER)
+        imap_server.login(EMAIL_ACCOUNT, PASSWORD)
+        smtp_server = smtplib.SMTP(SMTP_SERVER, port) 
+        smtp_server.starttls()
+        smtp_server.login(EMAIL_ACCOUNT, PASSWORD)
+    except imaplib.IMAP4.error as e:
+        raise Exception("Authentication failed. Please check your credentials.") from e
+    except smtplib.SMTPException as e:
+        print(f"Authentication failed. Please check your credentials.: {e}")
+    except Exception as e:
+        print(f"An error occured: {e}")
+
+    status, msg_data = imap_server.fetch(email_id, "(RFC822)")
+
+    # Parse the email content
+    msg = email.message_from_bytes(msg_data[0][1])
+
+    # Get the email subject
+    subject, encoding = decode_header(msg["Subject"])[0]
+    if isinstance(subject, bytes):
+        subject = subject.decode(encoding if encoding else "utf-8")
+
+    history_Element["subject"] = subject
+
+    # Get the sender's information
+    sender_name, sender_email = email.utils.parseaddr(msg["From"])
+    history_Element["sender_name"] = sender_name
+    history_Element["sender_email"] = sender_email
+
+    # Get the date and format it
+    date_tuple = email.utils.parsedate_tz(msg["Date"])
+    email_date = parsedate_to_datetime(msg["Date"]).strftime("%d-%b-%Y %H:%M:%S")
+    history_Element['email_date'] = email_date
+
+
+    if msg.is_multipart():
+        for part in msg.walk():
+            # Extract content type
+            content_type = part.get_content_type()
+            content_disposition = str(part.get("Content-Disposition"))
+
+            try:
+                # Get the email body
+                body = part.get_payload(decode=True).decode()
+                body = BeautifulSoup(body, "html.parser")
+                body = body.get_text()
+                history_Element["body"] = body
+
+                # split_gmail = body.split(" ")
+                # print("Body:", body)
+                # conversation_history.append(history_Element)
+                
+                break
+            except:
+                pass
+
+    return history_Element
+
+# getAllDraft(IMAP_SERVER, SMTP_SERVER, EMAIL_ACCOUNT, PASSWORD, port)
 
 def draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER):
     
@@ -112,6 +196,8 @@ def draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_
     finally:
         smtp_server.quit()
         imap_server.close()
+
+
 
 
 def send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port):

@@ -32,6 +32,7 @@ export default function Dashboard(){
     const myDate1 = {"Email_b'5161'": {"Sender_Name": "", "Sender_Email": "olivia@mail.nanonets.com", "Subject": "Cut Manual Data Entry by 80% Instantly, here's how!", "Response": "Here are the short summaries:\n\n1. {'subject': 'Top Jobs from Leading IT/Tech Companies like Amazon, Ola, Paytm etc', 'sender_name': 'hirist.tech', 'sender_email': 'info@hirist.tech', 'email_date': '28-Oct-2024 03:42:11', 'body': 'Please Enable Javascript'}\n\"Unlock top job opportunities from renowned IT/Tech companies like Amazon, Ola, and Paytm with Hirist.tech's exclusive list.\"\n\n2. {'subject': \"Cut Manual Data Entry by 80% Instantly, here's how!\", 'sender_name': '', 'sender_email': 'olivia@mail.nanonets.com', 'email_date': '28-Oct-2024 05:26:44'}\n\"Discover a game-changing way to automate data entry and boost productivity by 80%. Get instant access to the solution from Nanonets.\"", "Email_date": "28-Oct-2024 05:26:44"}, "Email_b'5160'": {"Sender_Name": "hirist.tech", "Sender_Email": "info@hirist.tech", "Subject": "Top Jobs from Leading IT/Tech Companies like Amazon, Ola, Paytm etc", "Response": "Here is a short summary:\n\n\"Get the latest job updates from top IT/Tech companies like Amazon, Ola, and Paytm. Stay ahead in your career with Hirist.tech's exclusive list of leading jobs.\"", "Email_date": "28-Oct-2024 03:42:11"}};
 
     const [summary, setSummary] = useState<Record<string, EmailSummary> | null>(null);
+    const [data, setData] = useState<Record<string, EmailSummary> | null>(null);
 
     const [categorySorted, setCategorySorted] = useState<EmailSummary[] | null>();
     const [prioritySorted, setPrioritySorted] = useState<EmailSummary[] | null>();
@@ -42,15 +43,25 @@ export default function Dashboard(){
     const [sortedByPriority, setSortedByPriority] = useState(false);
 
     useEffect(() => {
+       
         // Ensure this code runs only on the client side
         if (typeof window !== 'undefined') {
+            
           // Your client-side code here
           console.log("Summary variable dat\n......")
           console.log(summary)
           console.log("Hello")
-         
+          
         }
       }, [summary]);
+
+      useEffect(() => {
+        const storedData = localStorage.getItem("myData");
+        if (storedData) {
+          setSummary(JSON.parse(storedData));
+        }
+      }, []);
+
 
     const sortByDateList = () => {
         setSortByCategory(false);
@@ -64,8 +75,11 @@ export default function Dashboard(){
             console.log("Into fetchData try ... fetching data!")
             const response = await axios.get('http://127.0.0.1:8000/');
             console.log(response.data);
-            setSummary(response.data)
+            setSummary(response.data);
+            console.log("Saving data to local storage")
+            localStorage.setItem("myData", JSON.stringify(response.data))
             setIsLoading(false)
+
         }catch(error) {
             console.error("Error fetching data : ", error);
         }
