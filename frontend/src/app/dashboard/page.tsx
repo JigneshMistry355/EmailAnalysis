@@ -118,7 +118,7 @@ export default function Dashboard(){
                 // return summary[a].Priority
                 // .localeCompare(summary[b].Priority
                 // );
-                return priorityOrder.indexOf(a.Priority) - priorityOrder.indexOf(b.Priority);
+                return priorityOrder.indexOf(a.Priority.toLowerCase()) - priorityOrder.indexOf(b.Priority.toLowerCase());
             });
             console.log("Sorted By Priority ==> \n");
             console.log(sortedByPriority);
@@ -205,23 +205,23 @@ export default function Dashboard(){
                         </button>
                     </div>
                     <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
-                        <button onClick={sortData}>
-                             Sentiment Analysis
-                        </button>
-                    </div>
-                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => router.push('/Draft')}>
                              Writing Assistance
                         </button>
                     </div>
                     <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
+                        <button onClick={sortData}>
+                             Usecase X
+                        </button>
+                    </div>
+                    <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Deep")}>
-                             Analytics and Report
+                        Usecase Y
                         </button>
                     </div>
                     <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                         <button onClick={() => alert("Showing data related to Hemant")}>
-                             Knowledge Management
+                        Usecase Z
                         </button>
                     </div>
                 </div>

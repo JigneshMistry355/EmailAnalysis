@@ -39,6 +39,7 @@ export default function Draft(){
             console.log(response.status);
             console.log(response.data);
             alert("Email sent successfully..!")
+            router.push('/dashboard')
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Axios error:", error.response?.data);
@@ -74,23 +75,23 @@ export default function Draft(){
                     </button>
                 </div>
                 <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
-                    <button onClick={() => alert("Showing data related to Tanay")}>
-                            Sentiment Analysis
-                    </button>
-                </div>
-                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => router.push('#')}>
                             Writing Assistance
                     </button>
                 </div>
                 <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
+                    <button onClick={() => alert("Showing data related to Tanay")}>
+                            Usecase X
+                    </button>
+                </div>
+                <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => alert("Showing data related to Deep")}>
-                            Analytics and Report
+                    Usecase Y
                     </button>
                 </div>
                 <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
                     <button onClick={() => alert("Showing data related to Hemant")}>
-                            Knowledge Management
+                    Usecase Z
                     </button>
                 </div>
             </div>
