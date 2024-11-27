@@ -8,8 +8,9 @@ from datetime import datetime, timedelta, timezone
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from typing import Optional
-from Generate_email import send_email, draft_email
+from Generate_email import send_email, draft_email, generate_to_send
 from dotenv import load_dotenv
+from read_draft import ReadDraft
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
@@ -184,6 +185,11 @@ class SendItems(BaseModel):
     Category: Optional[str] = None
     Priority: Optional[str] = None
 
+class DraftList(BaseModel):
+    Subject : Optional[str] = None
+    Receiver_email : Optional[str] = None
+    Body : Optional[str] = None
+
 @app.post("/send_email/")
 async def email_response(data : SendItems):
     load_dotenv()
@@ -223,3 +229,39 @@ async def email_response(data : Item):
     response = draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
     # print(response)
     return response
+
+@app.post("/generate_to_send_email/")
+async def generate_email(data : Item):
+    load_dotenv()
+    EMAIL_ACCOUNT = os.getenv("NEW_USER")
+    PASSWORD = os.getenv("NEW_PASSWORD")
+    SMTP_SERVER = "smtp.gmail.com"
+    IMAP_SERVER = "imap.gmail.com"
+    port = 587
+    subject = data.Subject
+    sender = data.Sender_Name
+    recipient = data.Sender_Email
+    body = data.Response
+
+    print("Executing function")
+    # print("Details ==> ",json.dumps(subject), sender, recipient)
+    response = generate_to_send(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
+    # print(response)
+    return response
+
+@app.get("/draft_list/")
+async def draft_list():
+    load_dotenv()
+    EMAIL_ACCOUNT = os.getenv("NEW_USER")
+    PASSWORD = os.getenv("NEW_PASSWORD")
+    IMAP_SERVER = "imap.gmail.com"
+    SMTP_SERVER = "smtp.gmail.com"
+    smtp_port = 587
+    imap_port = 993
+    draft_object = ReadDraft(EMAIL_ACCOUNT, PASSWORD, IMAP_SERVER, imap_port, SMTP_SERVER, smtp_port)
+    Emails = draft_object.getAllDraft()
+    myDraftList = []
+    for email_id in Emails:
+        # print(draft_object.SingleEmailDetails(email_id))
+        myDraftList.append(draft_object.SingleEmailDetails(email_id))
+    return myDraftList 

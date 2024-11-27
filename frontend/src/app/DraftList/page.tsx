@@ -7,13 +7,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 type EmailSummary = {
-    Sender_Name: string;
-    Sender_Email: string;
-    Subject: string;
-    Response: string;
-    Email_date:string;
-    Category: string; 
-    Priority: string;
+    subject: string;
+    receiver_email: string;
+    body: string;
+    
 };
 
 export default function Dashboard(){
@@ -74,7 +71,7 @@ export default function Dashboard(){
         try {
             setIsLoading(true)
             console.log("Into fetchData try ... fetching data!")
-            const response = await axios.get('http://127.0.0.1:8000/');
+            const response = await axios.get('http://127.0.0.1:8000/draft_list/');
             console.log(response.data);
             setSummary(response.data);
             console.log("Saving data to local storage")
@@ -86,82 +83,20 @@ export default function Dashboard(){
         }
     }
 
-    const sortData = () => {
-        if (summary) {
-            const sortedKeys = Object.keys(summary).sort((a, b) => {
-                return summary[a].Category
-                .localeCompare(summary[b].Category
-                );
-            });   
-            const sortedSummary = sortedKeys.map(key => summary[key]);
-            console.log(sortedSummary);
-            
-            const emailSummary = sortedSummary.map(item => ({
-                Sender_Name : item.Sender_Name,
-                Sender_Email : item.Sender_Email,
-                Subject : item.Subject,
-                Response : item.Response,
-                Email_date : item.Email_date,
-                Category : item.Category,
-                Priority : item.Priority,
-            }));
-            setCategorySorted(emailSummary);
-            setSortByCategory(true);
-            setReverseDate(false);
-            setSortedByPriority(false);
-        }
-    }
+   
 
-    const sortByPriority = () => {
-        const priorityOrder = ["urgent", "high", "medium", "low"];
-        if (summary) {
-            const sortedByPriority = Object.values(summary).sort((a, b) => {
-                // return summary[a].Priority
-                // .localeCompare(summary[b].Priority
-                // );
-                return priorityOrder.indexOf(a.Priority.toLowerCase()) - priorityOrder.indexOf(b.Priority.toLowerCase());
-            });
-            console.log("Sorted By Priority ==> \n");
-            console.log(sortedByPriority);
-            // if (summary) {
-            //     const sortedByPriority = Object.keys(summary).sort((a, b) => {
-            //         return priorityOrder.indexOf(a) - priorityOrder.indexOf(b);
-            //     });
-            // }
-            // Map sorted keys to the summary values
-            // const sortedSummary = sortedByPriority.map(values => summary[key]);
-            
-            // const emailSummary = sortedSummary.map(item => ({
-            //     Sender_Name: item.Sender_Name,
-            //     Sender_Email: item.Sender_Email,
-            //     Subject: item.Subject,
-            //     Response: item.Response,
-            //     Email_date: item.Email_date,
-            //     Category: item.Category,
-            //     Priority: item.Priority,
-            // }));
-
-            setReverseDate(false);
-            setSortByCategory(false);
-            setSortedByPriority(true);
     
-            // console.log(emailSummary);
-            setPrioritySorted(sortedByPriority);
-        }
-    };
 
     const respond_now = async (item: any) => {
-        console.log("\nItems to send =====================================>", item);
+        console.log("Items to send", item);
         try {
             setIsLoading(true);
-            
-            const response = await axios.post('http://localhost:8000/generate_to_send_email/', item);
+            const response = await axios.post('http://localhost:8000/send_email/', item);
             console.log(response.status);
             console.log("Logging response data for send data:");
             console.log(response.data);
-            alert("Email generated successfully..!")
+            alert("Email sent successfully..!")
             setIsLoading(false);
-            router.push(`/Draft?data=${encodeURIComponent(JSON.stringify(response.data))}`);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Axios error:", error.response?.data);
@@ -172,21 +107,22 @@ export default function Dashboard(){
     };
 
     const draft_email = async (item: any) => {
-        console.log("Items to send", item);
+        console.log("Items to send ====================>", item);
         try {
             setIsLoading(true);
-            const response = await axios.post('http://localhost:8000/draft_email/', item);
-            console.log(response.status);
+            // const response = await axios.get('http://localhost:8000/draft_list/');
+            // console.log(response.status);
+            console.log("Sending the drafted emails =====>>>>> ")
+            console.log(item);
+            // console.log("Logging response data for draft:");
+            // console.log(response.data);
 
-            console.log("Logging response data for draft:");
-            console.log(response.data);
+            // const draft_data = response.data
 
-            const draft_data = response.data
-
-            alert("Draft saved successfully..!");
+            // alert("Draft saved successfully..!");
             setIsLoading(false);
 
-            router.push(`/Draft?data=${encodeURIComponent(JSON.stringify(draft_data))}`);
+            router.push(`/Draft?data=${encodeURIComponent(JSON.stringify(item))}`);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Axios error:", error.response?.data);
@@ -205,7 +141,7 @@ export default function Dashboard(){
            <div className="relative flex bg-gray-100 h-full min-h-screen font-mono text-base pt-7">
                 <div className=" flex-row w-1/4 bg-gray-100 mt-4">
                     <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xlhover:cursor-pointer text-center text-amber-300">
-                        <button onClick={() => {}}>
+                        <button onClick={() => {router.push('/dashboard')}}>
                               Email Summarization
                         </button>
                     </div>
@@ -215,8 +151,8 @@ export default function Dashboard(){
                         </button>
                     </div>
                     <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
-                        <button onClick={() => {router.push('/DraftList')}}>
-                             My Drafts
+                        <button onClick={() => {}}>
+                        My Drafts
                         </button>
                     </div>
                     <div className="flex-col mx-1 my-2 px-8 py-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 transition duration-300 rounded-sm shadow-xl hover:cursor-pointer text-center text-amber-300">
@@ -233,60 +169,11 @@ export default function Dashboard(){
 
                 <div className="flex-row w-3/4 text-justify">
 
-                <div className=" absolute right-32 inline-block text-left top-2">
+                <div className=" absolute right-5 inline-block text-left top-2">
                     <button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:bg-gradient-to-r hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" onClick={fetchData}>Refresh</button>
                 </div>
 
-                <Menu as="div" className=" absolute right-3 inline-block text-left top-2">
-                    <div>
-                        <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                        Sort By
-                        <ChevronDownIcon aria-hidden="true" className="-mr-1 h-5 w-5 text-gray-400" />
-                        </MenuButton>
-                    </div>
-
-                    <MenuItems
-                        transition
-                        className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
-                    >
-                        <div className="py-1">
-                        <MenuItem>
-                            <button
-                            onClick={sortData}
-                            className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                            >
-                            Category
-                            </button>
-                        </MenuItem>
-                        <MenuItem>
-                            <button
-                            onClick={sortByPriority}
-                            className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                            >
-                            Priority
-                            </button>
-                        </MenuItem>
-                        <MenuItem>
-                            <button
-                            onClick={sortByDateList}
-                            className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                            >
-                            Date
-                            </button>
-                        </MenuItem>
-                        <form action="#" method="POST">
-                            <MenuItem>
-                            <button
-                                type="submit"
-                                className="block w-full px-4 py-2 text-left text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:text-gray-900 data-[focus]:outline-none"
-                            >
-                                Sign out
-                            </button>
-                            </MenuItem>
-                        </form>
-                        </div>
-                    </MenuItems>
-                </Menu>
+                
 
                 { isLoading && (
                     <div className="flex justify-center items-center h-3/4">
@@ -301,107 +188,13 @@ export default function Dashboard(){
                 </div>
                 )}
 
-                {!isLoading && !reverseDate && sortByCategory && categorySorted?.map((item, index) => (
-                        <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-200 to-blue-300 rounded-md shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
-                           
-                                    {Object.entries(item).map(([key, val]) => (
-                                        <div key={key}>
-                                            {key === "Category" && (
-                                                <div className="absolute top-2 right-2/4 text-ellipsis overflow-hidden">
-                                                    Category : {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                </div>
-                                            )}
-
-                                            {key === "Priority" && (
-                                                <div className="absolute top-2 right-64 text-ellipsis overflow-hidden">
-                                                    Priority : {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                </div>
-                                            )}
-
-                                            {key === "Email_date" && (
-                                                <div className="absolute top-2 right-5 text-ellipsis overflow-hidden">
-                                                    {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                </div>
-                                            )}
-
-                                            { key !=="Email_date" && key !== "Category" && key !== "Priority" && (
-                                            <table key={index}>
-                                                <tbody>
-                                                    <tr key={key}>
-                                                        <th className="w-36 align-top">
-                                                            <strong className="text-black">{key} : </strong>
-                                                        </th>
-                                                        <td className="text-justify inline text-wrap">
-                                                            {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            )}
-                                        </div>
-                                    ))}
-                    <div className="flex flex-row-reverse mt-2">
-                        <button onClick={() => respond_now(item)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md">Reply Now</button>
-                        <button onClick={() => draft_email(item)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md">Draft email</button>
-                    </div>
-                                
-                        </div>
-                    ))}
-
-                    {!isLoading && !reverseDate && sortedByPriority && prioritySorted?.map((item, index) => (
-                        <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-200 to-blue-300 rounded-md shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
-                           
-                                    {Object.entries(item).map(([key, val]) => (
-                                        <div key={key}>
-                                            {key === "Category" && (
-                                                <div className="absolute top-2 right-2/4 text-ellipsis overflow-hidden">
-                                                    Category : {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                </div>
-                                            )}
-
-                                            {key === "Priority" && (
-                                                <div className="absolute top-2 right-64 text-ellipsis overflow-hidden">
-                                                    Priority : {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                </div>
-                                            )}
-
-                                            {key === "Email_date" && (
-                                                <div className="absolute top-2 right-5 text-ellipsis overflow-hidden">
-                                                    {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                </div>
-                                            )}
-
-                                            { key !=="Email_date" && key !== "Category" && key !== "Priority" && (
-                                            <table key={index}>
-                                                <tbody>
-                                                    <tr key={key}>
-                                                        <th className="w-36 align-top">
-                                                            <strong className="text-black">{key} : </strong>
-                                                        </th>
-                                                        <td className="text-justify inline text-wrap">
-                                                            {typeof val === 'object' ? JSON.stringify(val) : val}
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            )}
-                                        </div>
-                                    ))}
-                    <div className="flex flex-row-reverse mt-2">
-                        <button onClick={() => respond_now(item)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md">Reply Now</button>
-                        <button onClick={() => draft_email(item)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md">Draft email</button>
-                    </div>
-                                
-                        </div>
-                    ))}
-
-                
-                {!isLoading && summary && reverseDate===true && Object.entries(summary).map(([key, value]) => (
+                  
+                  {!isLoading && summary && reverseDate===true && Object.entries(summary).map(([key, value]) => (
 
                     <div className="relative flex-col mx-2 my-6 px-8 py-4 pt-10 bg-gradient-to-r from-cyan-200 to-blue-300 rounded-md shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap" key={key}>
 
-                    
-                    
+
+
                     {typeof value === 'object' && value !== null && !Array.isArray(value)  ? (
                         
                         Object.entries(value).map(([key1, val]) => (
@@ -449,15 +242,13 @@ export default function Dashboard(){
                         JSON.stringify(value)
                     )}
                     <div className="flex flex-row-reverse mt-2">
+                        {/* <button onClick={() => respond_now(value)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md"></button> */}
                         <button onClick={() => respond_now(value)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md">Reply Now</button>
-                        <button onClick={() => draft_email(value)} className="bg-yellow-500 hover:bg-yellow-600 mx-3 p-2 rounded-md">Draft email</button>
                     </div>
-                     
+                    
 
-                </div>
-                ))}
-
-               
+                    </div>
+                    ))}
 
                 
 
@@ -469,34 +260,3 @@ export default function Dashboard(){
 
     
             
-    
-    // <div>
-
-                
-    // <div className="relative flex-col mx-2 my-6 px-8 py-10 bg-gradient-to-r from-cyan-300 to-blue-500 rounded-2xl shadow-xl text-gray-800 right-0 contain-inline-size text-nowrap">
-
-    // {categorySorted && reverseDate === false && Array.isArray(categorySorted) ? (
-        
-    //         categorySorted?.map((item, index) => (
-    //             <table key={index}>
-    //                 <tbody>
-    //                     {Object.entries(item).map(([key, val]) => (
-    //                     <div>
-    //                         <tr key={key}>
-    //                             <th className="w-36 align-top">
-    //                                 <strong className="text-black">{key}:</strong>
-    //                             </th>
-    //                             <td className="text-justify inline text-wrap">
-    //                                 {typeof val === 'object' ? JSON.stringify(val) : val}
-    //                             </td>
-    //                         </tr>
-    //                     </div>
-    //                     ))}
-    //                 </tbody>
-    //             </table>
-    //         ))
-    //     ) : (
-    //         JSON.stringify(categorySorted)
-    //     )} 
-    //     </div>
-    // </div>
