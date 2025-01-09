@@ -204,7 +204,7 @@ def generate_to_send(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, 
     message["To"] = recipient
     message["Subject"] = subject
 
-    prompt = f"generate a formal response email body from {EMAIL_ACCOUNT} for {sender} only. Do not generate subject. Here is the summary of his email : {body}"
+    prompt = f"generate a formal response email body from {EMAIL_ACCOUNT} for {sender} only. Do not generate subject. Here is the summary of this email : {body}"
 
     ollama_response = ollama.chat(
         model = 'llama3.1:8b', 
@@ -228,11 +228,11 @@ def generate_to_send(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, 
         imap_server.login(EMAIL_ACCOUNT, PASSWORD)
         
 
-        print('$'*120)
-        print(message["From"])
-        print(message['To'])
-        print(message['Subject'])
-        print("Process Complete..!")
+        # print('$'*120)
+        # print(message["From"])
+        # print(message['To'])
+        # print(message['Subject'])
+        # print("Process Complete..!")
         return { "Subject": message["Subject"],  "Sender_Name": sender, "To": message["To"], "Body": ollama_response, }
 
     except Exception as e:
@@ -274,13 +274,13 @@ def send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_S
    
 
 
-subject = "Test Email from Jignesh today"
-sender = "jigneshmistry1997@gmail.com"
-recipient = "jvmistry7@gmail.com"
-body = """
-aaa bbb c d eeeeeeee ffffff
-"""
-generate_to_send(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
+# subject = "Test Email from Jignesh today"
+# sender = "jigneshmistry1997@gmail.com"
+# recipient = "jvmistry7@gmail.com"
+# body = """
+# aaa bbb c d eeeeeeee ffffff
+# """
+# generate_to_send(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
 # send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
 # draft_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port, IMAP_SERVER)
 # {"Sender_Name":"=?utf-8?Q?Kotak_Fastrack_Personal_Loan_=F0=9F=92=B0?=","Sender_Email":"retailproducts@kotak.in","Subject":"Wohoo😍 Rs.100000 is pre-approved for you, Jignesh Mistry","Response":"Here is a summary of the email content, focusing on key information only:\n\n* The sender is Kotak Mahindra Bank.\n* A pre-approved loan of ₹100,000 is available.\n* Features include:\n\t+ Instant disbursement\n\t+ Zero documentation\n\t+ Tenure of 36 months\n* Click here to view complete terms and conditions.","Email_date":"13-Nov-2024 02:22:58","Category":"Offer","Priority":"low"}

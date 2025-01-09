@@ -141,6 +141,7 @@ async def read_own_items(
     return [{"item_id": "Foo", "owner": current_user.username}]  
 
 
+
 @app.get("/")
 def run_script():
     try :
@@ -158,6 +159,7 @@ def run_script():
     except Exception as e:
         return {"message":"An error occured", "error": str(e)}
     
+
 # class Item(BaseModel):
 #     Sender_Name : str | None = None
 #     Sender_Email : str | None = None
@@ -166,6 +168,7 @@ def run_script():
 #     Email_date : str | None = None
 #     Category : str | None = None
 #     Priority : str | None = None
+
 
 class Item(BaseModel):
     Sender_Name: Optional[str] = None
@@ -176,6 +179,7 @@ class Item(BaseModel):
     Category: Optional[str] = None
     Priority: Optional[str] = None
 
+
 class SendItems(BaseModel):
     Sender_Name : Optional[str] = None
     Body : Optional[str] = None
@@ -185,10 +189,12 @@ class SendItems(BaseModel):
     Category: Optional[str] = None
     Priority: Optional[str] = None
 
+
 class DraftList(BaseModel):
     Subject : Optional[str] = None
     Receiver_email : Optional[str] = None
     Body : Optional[str] = None
+
 
 @app.post("/send_email/")
 async def email_response(data : SendItems):
@@ -207,8 +213,8 @@ async def email_response(data : SendItems):
     print("Subject: ", subject)
     print("Sender Email: ", sender)
     print("Receiver: ", recipient)
-
     return {"Message": response}
+
 
 # send_email(subject, sender, recipient, body, EMAIL_ACCOUNT, PASSWORD, SMTP_SERVER, port)
 @app.post("/draft_email/")
@@ -230,6 +236,7 @@ async def email_response(data : Item):
     # print(response)
     return response
 
+
 @app.post("/generate_to_send_email/")
 async def generate_email(data : Item):
     load_dotenv()
@@ -249,6 +256,7 @@ async def generate_email(data : Item):
     # print(response)
     return response
 
+
 @app.get("/draft_list/")
 async def draft_list():
     load_dotenv()
@@ -264,4 +272,4 @@ async def draft_list():
     for email_id in Emails:
         # print(draft_object.SingleEmailDetails(email_id))
         myDraftList.append(draft_object.SingleEmailDetails(email_id))
-    return myDraftList 
+    return myDraftList[::-1] 

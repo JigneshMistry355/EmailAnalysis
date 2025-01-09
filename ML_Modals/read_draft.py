@@ -72,7 +72,7 @@ class ReadDraft:
         # print("Date ===============> ",search_date)
 
         # Search emails received on or after this date
-        status, messages = self.imap.search(None, 'BEFORE', search_date)
+        status, messages = self.imap.search(None, f'OR ON {search_date} BEFORE {search_date}')
         if status != 'OK':
             raise Exception(f"IMAP search failed with status: {status}")
         # messages --> an array that contains binary id of each email in the inbox in a single string 
@@ -161,9 +161,10 @@ if __name__ == '__main__':
 
     draft_object = ReadDraft(EMAIL_ACCOUNT, PASSWORD, IMAP_SERVER, imap_port, SMTP_SERVER, smtp_port)
     Emails = draft_object.getAllDraft()
+    # print(Emails)
     myDraftList = []
     for email_id in Emails:
-        # print(draft_object.SingleEmailDetails(email_id))
+        print(draft_object.SingleEmailDetails(email_id))
         myDraftList.append(draft_object.SingleEmailDetails(email_id))
 
     
