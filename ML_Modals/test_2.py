@@ -3,8 +3,8 @@ import email
 from email.header import decode_header
 
 # Login credentials
-username = "sahiljadhav25009@gmail.com"
-password = "owhx qsgn dmrc fbxi"
+username = ""
+password = ""
 
 # Connect to the IMAP server
 imap = imaplib.IMAP4_SSL("imap.gmail.com")

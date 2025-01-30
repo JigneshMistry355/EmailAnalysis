@@ -8,10 +8,11 @@ now = datetime.now()
 formatted_date = now.strftime("%d-%b-%Y")
 print("Today's date:", formatted_date)
 
-
+usn = 'your email'
+passw = 'password'
 # Login credentials
-username = "sahiljadhav25009@gmail.com"
-password = "owhx qsgn dmrc fbxi"
+username = usn
+password = passw
 
 # Connect to Gmail IMAP server
 imap = imaplib.IMAP4_SSL("imap.gmail.com", 993)

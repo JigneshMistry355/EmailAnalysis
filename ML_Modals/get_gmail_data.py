@@ -404,7 +404,7 @@ if __name__ == '__main__':
 
     
 
-    # obj = GmailSummary("sahiljadhav25009@gmail.com", "owhx qsgn dmrc fbxi")
+    # obj = GmailSummary()
     
     
     # print(response)
@@ -415,7 +415,7 @@ if __name__ == '__main__':
     # username = os.getenv("EMAIL_USER")
     # password = os.getenv("EMAIL_PASS")
 
-    # # obj = GmailSummary("sahiljadhav25009@gmail.com", "owhx qsgn dmrc fbxi")
+    # # obj = GmailSummary()
     # obj = GmailSummary(username, password)
     # obj.Login()
 
